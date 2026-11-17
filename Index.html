@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS AI</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #050b18;
+  color: #e8f7ff;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+header {
+  padding: 25px 10px;
+  color: #42d9ff;
+  letter-spacing: 5px;
+}
+.status { color: #65eaff; font-size: 13px; }
+.circle {
+  width: 190px;
+  height: 190px;
+  border: 3px solid #19caff;
+  border-radius: 50%;
+  margin: 50px auto 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 25px #087da9;
+}
+button {
+  background: #087fae;
+  color: white;
+  border: 1px solid #35d9ff;
+  padding: 15px 25px;
+  border-radius: 30px;
+  font-size: 16px;
+  margin: 8px;
+}
+#output {
+  margin: 25px;
+  min-height: 65px;
+  line-height: 1.6;
+  color: #b9edff;
+}
+.panel {
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #146486;
+  border-radius: 15px;
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>J.A.R.V.I.S</h1>
+<div class="status">PERSONAL AI ASSISTANT</div>
+</header>
+
+<div class="circle">
+  <span style="font-size:65px">◉</span>
+</div>
+
+<div class="status" id="status">SYSTEM ONLINE</div>
+
+<button onclick="listen()">🎙 TALK TO JARVIS</button>
+<button onclick="speak('Hello! I am Jarvis. How can I help you?')">
+  🔊 TEST VOICE
+</button>
+
+<div class="panel">
+  <h3>JARVIS RESPONSE</h3>
+  <div id="output">Hello! Your Jarvis system is ready.</div>
+</div>
+
+<script>
+function speak(message) {
+  document.getElementById("output").innerText = message;
+  if ("speechSynthesis" in window) {
+    let speech = new SpeechSynthesisUtterance(message);
+    speech.lang = "en-IN";
+    speechSynthesis.speak(speech);
+  }
+}
+
+function listen() {
+  const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    speak("Voice recognition is not supported in this browser. Please try Chrome.");
+    return;
+  }
+
+  let recognition = new SpeechRecognition();
+  recognition.lang = "en-IN";
+  recognition.interimResults = false;
+
+  document.getElementById("status").innerText = "LISTENING...";
+
+  recognition.onresult = function(event) {
+    let command = event.results[0][0].transcript.toLowerCase();
+    document.getElementById("output").innerText =
+      "You said: " + command;
+
+    if (command.includes("hello")) {
+      speak("Hello sir. Jarvis is ready.");
+    } else if (command.includes("time")) {
+      speak("The time is " +
+        new Date().toLocaleTimeString("en-IN"));
+    } else if (command.includes("date")) {
+      speak("Today's date is " +
+        new Date().toLocaleDateString("en-IN"));
+    } else if (command.includes("youtube")) {
+      speak("Opening YouTube.");
+      window.open("https://m.youtube.com", "_blank");
+    } else if (command.includes("google")) {
+      speak("Opening Google.");
+      window.open("https://www.google.com", "_blank");
+    } else {
+      speak("I heard " + command +
+        ". This command is not configured yet.");
+    }
+
+    document.getElementById("status").innerText =
+      "SYSTEM ONLINE";
+  };
+
+  recognition.onerror = function() {
+    document.getElementById("status").innerText =
+      "VOICE ERROR";
+    speak("Please check microphone permission and try again.");
+  };
+
+  recognition.onend = function() {
+    document.getElementById("status").innerText =
+      "SYSTEM ONLINE";
+  };
+
+  recognition.start();
+}
+</script>
+</body>
+</html>
